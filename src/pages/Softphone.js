@@ -50,6 +50,7 @@ import {loginAgent, logoutAgent, notReadyAgent, readyAgent} from "../redux/agent
 import QueueStats from "../components/QueueStats"
 import KeyPad from "../components/KeyPad"
 import {workcode} from "../redux/workcode";
+import {getUser} from "../redux/userActions";
 
 const marginStyles = {
     marginBottom: '10px'
@@ -123,6 +124,8 @@ export default function Softphone(props) {
         const onlineListener = () => {
             attemptReconnection();
         }
+
+        dispatch(getUser())
 
         // Monitor network connectivity and attempt reconnection when browser goes online
         window.addEventListener("online", onlineListener);

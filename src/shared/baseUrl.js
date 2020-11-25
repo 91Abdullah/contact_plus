@@ -1,5 +1,6 @@
 // export const baseUrl = 'http://localhost/contactplusapi/public';
-export const baseUrl = 'https://api.contact-plus.com/contactplusapi/public'
+// export const baseUrl = 'https://api.contact-plus.com/contactplusapi/public'
+export const baseUrl = 'https://api.contactplus.com'
 export const cookieRoute = '/sanctum/csrf-cookie'
 export const login = '/login';
 export const register = '/register';

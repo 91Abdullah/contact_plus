@@ -18,7 +18,7 @@ export const loginUser = (username, password) => (dispatch) => {
             if(response.status === 200) {
                 //dispatch(loginSuccess())
                 apiClient.get(user).then(response => {
-                    console.log(response)
+                    //console.log(response)
                     if(response.status === 200 && allowedUsers.indexOf(response.data.type) !== -1) {
                         sessionStorage.setItem('loggedIn', true)
                         dispatch(loginSuccess())
@@ -48,7 +48,7 @@ export const getUser = () => dispatch => {
     apiClient.get(cookieRoute).then((res) => {
         apiClient.get(user).then(response => {
             if(response.status === 200 && allowedUsers.indexOf(response.data.type) !== -1) {
-                sessionStorage.setItem('loggedIn', true)
+                //sessionStorage.setItem('loggedIn', true)
                 dispatch(userSuccess(response.data))
             } else {
                 dispatch(logoutUser(true))
