@@ -20,4 +20,4 @@ export const getSystem = '/api/system-setting'
 export const getReason = '/api/pause-reason'
 export const getWorkcodes = '/api/workcode'
 
-export const submitOutboudWorkCode = '/api/outbound/workcode'
+export const submitOutboudWorkCode = '/api/outboundWorkCode'

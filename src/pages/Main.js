@@ -44,9 +44,9 @@ function Main() {
                     <Menu.Item key="/sign-in">
                         <Link to="/sign-in">Login</Link>
                     </Menu.Item>
-                    <Menu.Item key="/sign-up">
+                    {/*<Menu.Item key="/sign-up">
                         <Link to="/sign-up">Register</Link>
-                    </Menu.Item>
+                    </Menu.Item>*/}
                     <Menu.Item key="/dashboard">
                         <Link to="/dashboard">App</Link>
                     </Menu.Item>
@@ -65,7 +65,7 @@ function Main() {
                         <Switch>
                             <Route exact path='/' component={Login} />
                             <Route path="/sign-in" component={Login} />
-                            <Route path="/sign-up" component={Register} />
+                            {/*<Route path="/sign-up" component={Register} />*/}
                             <PrivateRoute path="/dashboard">
                                 <Softphone user={user} system={system} />
                             </PrivateRoute>
