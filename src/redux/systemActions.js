@@ -6,7 +6,7 @@ export const getSettings = () => dispatch => {
     dispatch(loading())
     apiClient.get(cookieRoute).then(response => {
         apiClient.get(getSystem).then(response => {
-            console.log(response)
+            //console.log(response)
             if(response.status === 200)
                 dispatch(settingSuccess(response.data.data))
             else

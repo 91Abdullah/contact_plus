@@ -4,8 +4,6 @@ import {cookieRoute, login, logout, user} from "../shared/baseUrl";
 import apiClient from "../services/apiClient"
 import {allowedUsers} from "../config/user";
 
-axios.defaults.withCredentials = true
-
 export const loginUser = (username, password) => (dispatch) => {
     dispatch(loading())
     apiClient.get('/sanctum/csrf-cookie').then(response => {
@@ -16,18 +14,16 @@ export const loginUser = (username, password) => (dispatch) => {
         }).then(response => {
             console.log(response)
             if(response.status === 200) {
-                //dispatch(loginSuccess())
-                apiClient.get(cookieRoute).then(() => {
-                    apiClient.get(user).then(response => {
-                        //console.log(response)
-                        if(response.status === 200 && allowedUsers.indexOf(response.data.type) !== -1) {
-                            sessionStorage.setItem('loggedIn', true)
-                            dispatch(loginSuccess())
-                            dispatch(userSuccess(response.data))
-                        } else dispatch(logoutUser(true))
-                    }).catch(error => {
-                        console.log(error)
-                    })
+                dispatch(loginSuccess())
+                apiClient.get(user).then(response => {
+                    //console.log(response)
+                    if(response.status === 200 && allowedUsers.indexOf(response.data.type) !== -1) {
+                        sessionStorage.setItem('loggedIn', true)
+                        dispatch(loginSuccess())
+                        dispatch(userSuccess(response.data))
+                    } else dispatch(logoutUser(true))
+                }).catch(error => {
+                    console.log(error)
                 })
             } else if (response.status === 302) {
                 console.log(response)

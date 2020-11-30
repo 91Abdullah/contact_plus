@@ -73,7 +73,7 @@ function Main() {
                     </div>
                 </Spin>
             </Content>
-            <Footer style={{ textAlign: 'center' }}>Ant Design © 2020 Created by <a href="mailto:abdullah_basit@telecard.com.pk">Dev Team @ Telecard</a></Footer>
+            <Footer style={{ textAlign: 'center' }}>Contact Plus © 2020 Created by <a href="mailto:abdullah_basit@telecard.com.pk">Dev Team @ Telecard</a></Footer>
         </Layout>
     )
 }

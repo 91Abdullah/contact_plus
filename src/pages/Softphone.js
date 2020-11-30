@@ -46,11 +46,13 @@ import {
     UserAgentOptions, Web
 } from "sip.js"
 import {useDispatch, useSelector} from "react-redux"
-import {loginAgent, logoutAgent, notReadyAgent, readyAgent} from "../redux/agentActions";
+import {getChannel, isReadyAgent, loginAgent, logoutAgent, notReadyAgent, readyAgent} from "../redux/agentActions";
 import QueueStats from "../components/QueueStats"
 import KeyPad from "../components/KeyPad"
 import {workcode} from "../redux/workcode";
 import {getUser} from "../redux/userActions";
+import {fetchStatus} from "../redux/statsActions";
+import {WorkcodeForm} from "../components/WorkcodeForm";
 
 const marginStyles = {
     marginBottom: '10px'
@@ -70,67 +72,8 @@ export default function Softphone(props) {
     const workcode = useSelector(state => state.workcode)
     /*const workcodes = workcode.workcode.map(value => value.name)*/
 
-    // Number of times to attempt reconnection before giving up
-    const reconnectionAttempts = 3;
-// Number of seconds to wait between reconnection attempts
-    const reconnectionDelay = 4;
-
-// Used to guard against overlapping reconnection attempts
-    let attemptingReconnection = false;
-// If false, reconnection attempts will be discontinued or otherwise prevented
-    let shouldBeConnected = true;
-
-// Function which recursively attempts reconnection
-    const attemptReconnection = (reconnectionAttempt = 1): void => {
-        // If not intentionally connected, don't reconnect.
-        if (!shouldBeConnected) {
-            return;
-        }
-
-        // Reconnection attempt already in progress
-        if (attemptingReconnection) {
-            return;
-        }
-
-        // Reconnection maximum attempts reached
-        if (reconnectionAttempt > reconnectionAttempts) {
-            return;
-        }
-
-        // We're attempting a reconnection
-        attemptingReconnection = true;
-
-        setTimeout(() => {
-            // If not intentionally connected, don't reconnect.
-            if (!shouldBeConnected) {
-                attemptingReconnection = false;
-                return;
-            }
-            // Attempt reconnect
-            userAgent.reconnect()
-                .then(() => {
-                    // Reconnect attempt succeeded
-                    attemptingReconnection = false;
-                })
-                .catch((error: Error) => {
-                    // Reconnect attempt failed
-                    attemptingReconnection = false;
-                    attemptReconnection(++reconnectionAttempt);
-                });
-        }, reconnectionAttempt === 1 ? 0 : reconnectionDelay * 1000);
-    };
-
     useEffect(() => {
-        const onlineListener = () => {
-            attemptReconnection();
-        }
-
         dispatch(getUser())
-
-        // Monitor network connectivity and attempt reconnection when browser goes online
-        window.addEventListener("online", onlineListener);
-
-        return () => window.removeEventListener("online", onlineListener)
     }, [])
 
     const userAgentDelegate: UserAgentDelegate = {
@@ -143,22 +86,20 @@ export default function Softphone(props) {
             openNotificationWithIcon("error", "UA has been disconnected")
 
             // On disconnect, cleanup invalid registrations
-            registerer.unregister()
+            /*registerer.unregister()
                 .catch((e: Error) => {
                     // Unregister failed
                 });
             // Only attempt to reconnect if network/server dropped the connection (if there is an error)
             if (error) {
                 attemptReconnection();
-            }
+            }*/
         },
         onRegister(registration) {
-            console.log(registration)
-            openNotificationWithIcon("success", "UA has been registered")
+            // Registered UA
         },
         onInvite(invitation: Invitation) {
 
-            console.info('Incoming call')
             setIncomingSession(invitation)
             setIncomingCall(true)
             setIncomingNumber(invitation.remoteIdentity.uri.user)
@@ -184,6 +125,10 @@ export default function Softphone(props) {
                         setOnCall(true)
                         setCallStatus("CALL CONNECTED")
                         setupRemoteMedia(invitation)
+
+                        // Dispatch fetch channel
+                        dispatch(getChannel())
+
                         break;
                     case SessionState.Terminated:
                         // Session has terminated.
@@ -193,7 +138,9 @@ export default function Softphone(props) {
                         setIncomingNumber('')
                         setIncomingSession(false)
                         setCallStatus("CALL DISCONNECTED")
+                        setWorkcodeVisible(true)
                         cleanupMedia()
+
                         break;
                     default:
                         break;
@@ -242,6 +189,12 @@ export default function Softphone(props) {
                 break
         }
     }
+
+    // Set workode flag if call has been answered
+    const [workcodeVisible, setWorkcodeVisible] = useState(false)
+
+    // Set if this is an outbound workcode
+    const [isOutboundWorkCode, setIsOutboundWorkCode] = useState(false)
 
     const [server, setServer] = useState(null)
 
@@ -343,7 +296,7 @@ export default function Softphone(props) {
                     if(agentMode || blendMode) {
                         dispatch(loginAgent())
                     }
-                })
+                }).catch(error => openNotificationWithIcon('error', error.message))
         }
     }
 
@@ -382,6 +335,27 @@ export default function Softphone(props) {
     // Media Element
     const mediaElement = useRef()
     const [remoteStream] = useState(new MediaStream())
+
+    useEffect(() => {
+        if(agent.message)
+            openNotificationWithIcon('info', agent.message)
+    }, [agent.message])
+
+    useEffect(() => {
+        if(agent.errMess)
+            openNotificationWithIcon('error', agent.errMess)
+    }, [agent.errMess])
+
+    // Set fetch stats
+    useEffect(() => {
+        dispatch(isReadyAgent())
+        dispatch(fetchStatus())
+        const interval = setInterval(() => {
+            dispatch(fetchStatus())
+            //console.log('This will run every 5000 seconds!');
+        }, 30000);
+        return () => clearInterval(interval);
+    }, []);
 
     const setupRemoteMedia = (session: Session) => {
         session.sessionDescriptionHandler.peerConnection.getReceivers()
@@ -493,6 +467,8 @@ export default function Softphone(props) {
                     case SessionState.Established:
                         setCallStatus("CALL CONNECTED")
                         setupRemoteMedia(inviter)
+                        // Dispatch fetch channel
+                        dispatch(getChannel())
                         break;
                     case SessionState.Terminating:
                     // fall through
@@ -504,6 +480,9 @@ export default function Softphone(props) {
                         setOutgoingSession(false)
                         setCallStatus("CALL DISCONNECTED")
                         cleanupMedia()
+
+                        setWorkcodeVisible(true)
+                        setIsOutboundWorkCode(true)
                         break;
                     default:
                         throw new Error("Unknown session state.")
@@ -689,14 +668,15 @@ export default function Softphone(props) {
                 onKeyEvent={onKeyPress}
                 handleFocusableElements={true}
             />
+            <WorkcodeForm setIsOutbound={setIsOutboundWorkCode} isOutbound={isOutboundWorkCode} setVisible={setWorkcodeVisible} channel={agent.currentChannel} visible={workcodeVisible} />
             <Row gutter={20}>
                 <Col xs={24} lg={8} style={marginStyles}>
-                    <QueueStats title="Queue Stats" stats={stats.status[0]} />
+                    <QueueStats title="Queue Stats" stats={stats.status && stats.status[0]} />
                 </Col>
                 <Col style={marginStyles} xs={24} lg={{span: 8}}>
                     <Row align={"middle"} style={{marginBottom: 10}} justify={"space-between"}>
                         <Col>
-                            <Button size="small" onClick={onPause} danger={agent.isReady || (stats.status[1] && stats.status[1] === 'No')} type="primary" shape={"round"} icon={<PauseCircleFilled />}>{!agent.isReady || (stats.status[1] && stats.status[1]['Paused'] === 'Yes') ? `Ready` : `Not-Ready`}</Button>
+                            <Button size="small" onClick={onPause} danger={!agent.isReady} type="primary" shape={"round"} icon={<PauseCircleFilled />}>{!agent.isReady ? `Ready` : `Not-Ready`}</Button>
                         </Col>
                         <Col>
                             <Button size="small" onClick={registerPhone} danger={!register} type="primary" shape="round" icon={<AlertTwoTone twoToneColor="#52c41a" />}>
@@ -743,7 +723,7 @@ export default function Softphone(props) {
                     </Row>
                 </Col>
                 <Col xs={24} lg={8}>
-                    <QueueStats title="Agent Stats" stats={stats.status[1]} />
+                    <QueueStats title="Agent Stats" stats={stats.status && stats.status[1]} />
                 </Col>
             </Row>
         </Spin>

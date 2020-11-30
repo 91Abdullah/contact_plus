@@ -8,10 +8,10 @@ export const fetchStatus = () => dispatch => {
         apiClient.post(agentStatus)
             .then(response => {
                 if(response.status === 200)
-                    dispatch(statusSuccess(response.data.data))
+                    dispatch(statusSuccess(response.data?.data))
                 else
                     console.log(response)
-            }).catch(error => dispatch(statusFailed(error.response.data)))
+            }).catch(error => dispatch(statusFailed(error.response.error)))
     })
 }
 

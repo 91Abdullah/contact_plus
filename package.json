@@ -10,6 +10,7 @@
     "antd": "^4.6.6",
     "axios": "^0.20.0",
     "bootstrap": "^4.5.2",
+    "https-serve": "^1.0.0",
     "pretty-ms": "^7.0.1",
     "react": "^16.13.1",
     "react-animation": "^1.2.2",

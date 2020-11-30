@@ -5,7 +5,8 @@ const apiClient = axios.create({
     baseURL: baseUrl,
     withCredentials: true,
     headers: {
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
     }
 });
 

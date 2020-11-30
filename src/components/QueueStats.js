@@ -14,14 +14,6 @@ function QueueStats(props) {
     const dispatch = useDispatch()
     const nStats = useSelector(state => state.stats)
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            dispatch(fetchStatus())
-            console.log('This will run every 5000 seconds!');
-        }, 5000);
-        return () => clearInterval(interval);
-    }, []);
-
     return(
         <Spin size="large" spinning={nStats.isLoading}>
             <Card style={{textAlign: "center"}} title={title} bordered={false}>

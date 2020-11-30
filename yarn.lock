@@ -4674,7 +4674,7 @@ expect@^24.9.0:
     jest-message-util "^24.9.0"
     jest-regex-util "^24.9.0"
 
-express@^4.17.1:
+express@^4.16.4, express@^4.17.1:
   version "4.17.1"
   resolved "https://registry.yarnpkg.com/express/-/express-4.17.1.tgz#4491fc38605cf51f8629d39c2b5d026f98a4c134"
   integrity sha512-mHJ9O79RqluphRrcw2X/GTh3k9tVv8YcoyY4Kkh4WDMUYKRZUq0h1o0w2rrrxBqM7VoeUVqgb27xlEMXTnYt4g==
@@ -5559,6 +5559,13 @@ https-browserify@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/https-browserify/-/https-browserify-1.0.0.tgz#ec06c10e0a34c0f2faf199f7fd7fc78fffd03c73"
   integrity sha1-7AbBDgo0wPL68Zn3/X/Hj//QPHM=
+
+https-serve@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/https-serve/-/https-serve-1.0.0.tgz#280847c6020d67fe794cd57786f57092efec8c32"
+  integrity sha512-LfutU5XBnjnLj+rZ+F609iFAZsLbWfxh+ilD2XdK2sDZByokHGuOBgkcB0B34sHPlaLSe4c51rFQ1EeEwDzl+A==
+  dependencies:
+    express "^4.16.4"
 
 iconv-lite@0.4.24, iconv-lite@^0.4.24:
   version "0.4.24"
