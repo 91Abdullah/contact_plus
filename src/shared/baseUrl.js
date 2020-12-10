@@ -18,6 +18,6 @@ export const submitWorkcode = '/api/agent/workcode'
 export const user = '/api/get-user'
 export const getSystem = '/api/system-setting'
 export const getReason = '/api/pause-reason'
-export const getWorkcodes = '/api/workcode'
+export const getWorkcodes = '/api/workCode'
 
 export const submitOutboudWorkCode = '/api/outboundWorkCode'

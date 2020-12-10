@@ -6,10 +6,10 @@ export const fetchWorkcodes = () => dispatch => {
     apiClient.get(cookieRoute).then(() => {
         apiClient.get(getWorkcodes).then(response => {
             if(response.status === 200)
-                dispatch(getWorkcodeSuccess(response.data.data))
+                dispatch(getWorkcodeSuccess(response.data))
             else
                 dispatch(getWorkcodeFailed("Work codes Fetch failed"))
-        }).catch(error => dispatch(getWorkcodeFailed(error.response.data)))
+        }).catch(error => dispatch(getWorkcodeFailed(error.response)))
     })
 }
 

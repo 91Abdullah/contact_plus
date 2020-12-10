@@ -97,7 +97,7 @@ export const getReasons = () => dispatch => {
         apiClient.get(getReason)
             .then(response => {
                 if(response.status === 200)
-                    dispatch(reasonSuccess(response.data.data))
+                    dispatch(reasonSuccess(response.data))
                 else
                     console.log(response)
             }).catch(error => dispatch(reasonFailed(error.response.data)))
