@@ -8,10 +8,10 @@ export const getSettings = () => dispatch => {
         apiClient.get(getSystem).then(response => {
             //console.log(response)
             if(response.status === 200)
-                dispatch(settingSuccess(response.data.data))
+                dispatch(settingSuccess(response.data))
             else
                 console.log(response)
-        }).catch(error => dispatch(settingFailed(error.response.data)))
+        }).catch(error => dispatch(settingFailed(error.response)))
     })
 }
 
